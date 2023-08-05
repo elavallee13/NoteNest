@@ -1,81 +1,60 @@
 const express = require('express');
-const path = require('path');
-const { MongoClient, ObjectId } = require('mongodb');
+const bodyParser = require('body-parser');
+const fs = require('fs');
+
 const app = express();
-const PORT = process.env.PORT || 3000;
-const mongoURL = 'mongodb://localhost:27017';
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(express.static('public'));
+// Supports JSON-encoded bodies
+app.use(bodyParser.json());
 
-let db; 
-const dbName = 'notesdb'; 
+// Spports URL-encoded bodies
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
-MongoClient.connect(mongoURL, { useUnifiedTopology: true }, (err, client) => {
-  if (err) {
-    console.error('Error connecting to the database:', err);
-    return;
-  }
-  console.log('Connected to the database.');
-  db = client.db(dbName);
-  app.listen(PORT, () => {
-    console.log(`App listening on http://localhost:${PORT}`);
-  });
+// CRUD - Gets all notes
+app.get('/notes', (req, res) => {
+    let rawdata = fs.readFileSync('db.json');
+    let notes = JSON.parse(rawdata);
+    res.send(notes);
 });
 
-// API routes
-
-// All notes
-app.get('/api/notes', async (req, res) => {
-  try {
-    const notes = await db.collection('notes').find().toArray();
-    res.json(notes);
-  } catch (error) {
-    console.error('Error fetching notes:', error);
-    res.status(500).json({ error: 'Error fetching notes' });
-  }
+// Add a note
+app.post('/notes', (req, res) => {
+    let rawdata = fs.readFileSync('db.json');
+    let notes = JSON.parse(rawdata);
+    let newNote = req.body;
+    newNote.id = notes.length;  // set id to length of current notes
+    notes.push(newNote);
+    fs.writeFileSync('db.json', JSON.stringify(notes));
+    res.send(newNote);
 });
 
-// Create a new note
-app.post('/api/notes', async (req, res) => {
-  const { title, text } = req.body;
-  if (!title || !text) {
-    return res.status(400).json({ error: 'Title and text are required fields.' });
-  }
-
-  const newNote = {
-    title,
-    text,
-  };
-
-  try {
-    const result = await db.collection('notes').insertOne(newNote);
-    newNote.id = result.insertedId;
-    res.json(newNote);
-  } catch (error) {
-    console.error('Error creating note:', error);
-    res.status(500).json({ error: 'Error creating note.' });
-  }
+// Update a note
+app.put('/notes/:id', (req, res) => {
+    let rawdata = fs.readFileSync('db.json');
+    let notes = JSON.parse(rawdata);
+    let note = notes.find(note => note.id === parseInt(req.params.id));
+    if (note) {
+        Object.assign(note, req.body);
+        fs.writeFileSync('db.json', JSON.stringify(notes));
+        res.send(note);
+    } else {
+        res.status(404).send("Note not found");
+    }
 });
 
 // Delete a note
-app.delete('/api/notes/:id', async (req, res) => {
-  const noteId = req.params.id;
-  try {
-    const result = await db.collection('notes').deleteOne({ _id: ObjectId(noteId) });
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Note not found.' });
+app.delete('/notes/:id', (req, res) => {
+    let rawdata = fs.readFileSync('db.json');
+    let notes = JSON.parse(rawdata);
+    let noteIndex = notes.findIndex(note => note.id === parseInt(req.params.id));
+    if (noteIndex !== -1) {
+        notes.splice(noteIndex, 1);
+        fs.writeFileSync('db.json', JSON.stringify(notes));
+        res.send({id: req.params.id});
+    } else {
+        res.status(404).send("Note not found");
     }
-    res.json({ message: 'Note deleted successfully.' });
-  } catch (error) {
-    console.error('Error deleting note:', error);
-    res.status(500).json({ error: 'Error deleting note.' });
-  }
 });
 
-// Serve the index.html page
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+app.listen(3000, () => console.log('App is listening on port 3000'));

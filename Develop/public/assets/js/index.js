@@ -12,21 +12,21 @@ if (window.location.pathname === '/notes') {
   noteList = document.querySelectorAll('.list-container .list-group');
 }
 
-// Show an element
+// Show element
 const show = (elem) => {
   elem.style.display = 'inline';
 };
 
-// Hide an element
+// Hide element
 const hide = (elem) => {
   elem.style.display = 'none';
 };
 
-// activeNote is used to keep track of the note
+// To keep track of the note
 let activeNote = {};
 
 const getNotes = () =>
-  fetch('/api/notes', {
+  fetch('/notes', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ const getNotes = () =>
   });
 
 const saveNote = (note) =>
-  fetch('/api/notes', {
+  fetch('/notes', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const saveNote = (note) =>
   });
 
 const deleteNote = (id) =>
-  fetch(`/api/notes/${id}`, {
+  fetch(`/notes/${id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const handleNoteSave = () => {
   });
 };
 
-// Delete the clicked note
+// Delete clicked note
 const handleNoteDelete = (e) => {
   // Prevents the click listenerd for the list from being called when the button is clicked
   e.stopPropagation();
@@ -95,14 +95,14 @@ const handleNoteDelete = (e) => {
   });
 };
 
-// activeNote / displays it
+// Displays activeNote
 const handleNoteView = (e) => {
   e.preventDefault();
   activeNote = JSON.parse(e.target.parentElement.getAttribute('data-note'));
   renderActiveNote();
 };
 
-// activeNote to and empty object, allows the user to enter a new note
+// activeNote allows the user to enter a new note
 const handleNewNoteView = (e) => {
   activeNote = {};
   renderActiveNote();
