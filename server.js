@@ -7,11 +7,14 @@ const app = express();
 // Supports JSON-encoded bodies
 app.use(bodyParser.json());
 
-// Spports URL-encoded bodies
+// Supports URL-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
 
-// CRUD - Gets all notes
+// CRUD operations
+// Get all notes
 app.get('/notes', (req, res) => {
     let rawdata = fs.readFileSync('db.json');
     let notes = JSON.parse(rawdata);
