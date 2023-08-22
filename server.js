@@ -29,7 +29,7 @@ app.post('/api/notes', (req, res) => {
     let rawdata = fs.readFileSync('./db/db.json');
     let notes = JSON.parse(rawdata);
     let newNote = req.body;
-    newNote.id = notes.length;  // set id to length of current notes
+    newNote.id = notes.length +1;
     notes.push(newNote);
     fs.writeFileSync('./db/db.json', JSON.stringify(notes));
     res.json(newNote);
