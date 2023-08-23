@@ -40,6 +40,9 @@ GET /api/notes: Retrieve all notes.
 DELETE /api/notes/:id: Delete a note by ID.
 API documentation with request and response examples can be found here.
 
+App has been deployed to Heroku - https://git.heroku.com/notenest.git
+
+
 Contributing
 Contributions to this project are welcome! Feel free to submit issues and pull requests. Please follow the contributing guidelines for a smooth collaboration process.
 
