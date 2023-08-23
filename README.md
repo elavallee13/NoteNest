@@ -27,7 +27,7 @@ Mongoose: An Object Data Modeling (ODM) library for MongoDB and Node.js.
 JSON Web Tokens (JWT): For user authentication and authorization.
 bcrypt: A library for hashing and securely storing user passwords.
 Getting Started
-Clone this repository: git clone https://github.com/yourusername/note-taking-backend.git
+Clone this repository: git clone https://github.com/elavallee13/NoteNest
 Install the dependencies: npm install
 Configure environment variables such as database connection and JWT secret.
 Start the server: npm start
