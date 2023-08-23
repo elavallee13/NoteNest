@@ -71,4 +71,6 @@ app.get('/notes', (req, res) => {
     res.sendFile(path.join(__dirname,"./public/notes.html")) 
  });
 
-app.listen(3000, () => console.log('App is listening on port 3000'));
+ app.listen(PORT, () => {
+    console.log(`API server running on port ${PORT}!`);
+  });
